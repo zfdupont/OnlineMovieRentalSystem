@@ -256,13 +256,50 @@ public class EmployeeDao {
 		 */
 		
 		Employee employee = new Employee();
-		
-		/*Sample data begins*/
-		employee.setEmail("shiyong@cs.sunysb.edu");
-		employee.setFirstName("Shiyong");
-		employee.setLastName("Lu");
-		employee.setEmployeeID("631-413-5555");
-		/*Sample data ends*/
+		Connection conn = null;
+		try {
+			// Replace with your actual database connection details
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT P.SSN, P.FirstName, P.LastName, E.Email, SUM(M.DistrFee) AS TotalRevenue")
+					.append("FROM Employee E ")
+					.append("JOIN Rental R ON E.ID = R.CustRepId ")
+					.append("JOIN `Order` O ON R.OrderId = O.ID ")
+					.append("JOIN Movie M ON R.MovieId = M.ID ")
+					.append("GROUP BY E.ID ")
+					.append("ORDER BY TotalRevenue DESC ")
+					.append("LIMIT 1;")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+
+			if (rs.next()) {
+				employee.setEmployeeID(String.valueOf(rs.getInt("SSN")));
+				employee.setFirstName(rs.getString("FirstName"));
+				employee.setLastName(rs.getString("LastName"));
+				employee.setEmail(rs.getString("Email"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();  // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();  // Handle exceptions during close
+				}
+			}
+		}
+
+//		/*Sample data begins*/
+//		employee.setEmail("shiyong@cs.sunysb.edu");
+//		employee.setFirstName("Shiyong");
+//		employee.setLastName("Lu");
+//		employee.setEmployeeID("631-413-5555");
+//		/*Sample data ends*/
+
 		
 		return employee;
 	}
