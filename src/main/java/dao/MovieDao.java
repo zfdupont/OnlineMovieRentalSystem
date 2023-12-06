@@ -1,8 +1,7 @@
 package dao;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import model.Order;
 import model.Employee;
@@ -361,7 +360,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String query = "SELECT `Type` FROM Movie";
+			String query = "SELECT DISTINCT `Type` FROM Movie";
 
 			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
@@ -504,10 +503,11 @@ public List<Movie> getQueueOfMovies(String customerID){
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String query = String.format("SELECT * FROM Movie WHERE `Type` = %s", movieType);
+			String query = String.format("SELECT * FROM Movie WHERE `Type` = '%s'", movieType);
 
 			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
+			System.out.println(rs.getFetchSize());
 			while (rs.next()) {
 				Movie movie = new Movie();
 				movie.setMovieID(rs.getInt("ID"));
@@ -526,9 +526,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 				}
 			}
 		}
-		
-
-		
 		return movies;
 	}
 	
