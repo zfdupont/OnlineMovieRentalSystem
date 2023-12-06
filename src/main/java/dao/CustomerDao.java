@@ -6,6 +6,7 @@ import java.util.List;
 
 import model.Customer;
 import model.Customer;
+import model.Employee;
 
 import java.util.stream.IntStream;
 
@@ -18,6 +19,8 @@ public class CustomerDao {
 	 * @param String searchKeyword
 	 * @return ArrayList<Customer> object
 	 */
+	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
+
 	public List<Customer> getCustomers() {
 		/*
 		 * This method fetches one or more customers and returns it as an ArrayList
@@ -59,13 +62,51 @@ public class CustomerDao {
 		 * The customer record is required to be encapsulated as a "Customer" class object
 		 */
 
-
-		/*Sample data begins*/
 		Customer customer = new Customer();
-		customer.setCustomerID("111-11-1111");
-		customer.setLastName("Lu");
-		customer.setFirstName("Shiyong");
-		customer.setEmail("shiyong@cs.sunysb.edu");
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT C.ID AS CustomerID, P.FirstName, P.LastName, SUM(M.DistrFee) AS TotalSpent ")
+					.append("FROM Customer C ")
+					.append("JOIN Person P ON C.ID = P.SSN ")
+					.append("JOIN Account A ON C.ID = A.CustomerId ")
+					.append("JOIN Rental R ON A.ID = R.AccountId ")
+					.append("JOIN `Order` O ON R.OrderId = O.ID ")
+					.append("JOIN Movie M ON R.MovieId = M.ID ")
+					.append("GROUP BY C.ID, P.FirstName, P.LastName ")
+					.append("ORDER BY TotalSpent DESC")
+					.append("LIMIT 1;")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+
+			if (rs.next()) {
+				customer.setCustomerID(String.valueOf(rs.getInt("SSN")));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setEmail(rs.getString("Email"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();  // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();  // Handle exceptions during close
+				}
+			}
+		}
+		/*Sample data begins*/
+//		Customer customer = new Customer();
+//		customer.setCustomerID("111-11-1111");
+//		customer.setLastName("Lu");
+//		customer.setFirstName("Shiyong");
+//		customer.setEmail("shiyong@cs.sunysb.edu");
 		/*Sample data ends*/
 	
 		return customer;
