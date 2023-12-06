@@ -261,16 +261,69 @@ public class MovieDao {
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
+
+		Connection conn = null;
+
+		try {
+			// Replace with your database connection details
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			// Step 1: Find the most ordered genre for the given customer
+			String mostOrderedGenreQuery = new StringBuilder()
+					.append("SELECT M.Type, COUNT(*) as GenreCount ")
+					.append("FROM Movie M ")
+					.append("JOIN Rental R ON M.ID = R.MovieId ")
+					.append("JOIN Account A ON R.AccountId = A.ID ")
+					.append("WHERE A.CustomerId = ? ")
+					.append("GROUP BY M.Type ")
+					.append("ORDER BY GenreCount DESC ")
+					.append("LIMIT 1;")
+					.toString();
+
+			PreparedStatement mostOrderedGenreStmt = conn.prepareStatement(mostOrderedGenreQuery);
+			mostOrderedGenreStmt.setInt(1, customerID);
+			ResultSet genreResultSet = mostOrderedGenreStmt.executeQuery();
+
+			if (!genreResultSet.next()) {
+				return movies; // No genre found
+			}
+			String mostOrderedGenre = genreResultSet.getString("Type");
+
+			// Step 2: Recommend movies from the most ordered genre that the customer hasn't ordered yet
+			String suggestedMoviesQuery = new StringBuilder()
+					.append("SELECT M.ID, M.Name, M.Type ")
+					.append("FROM Movie M ")
+					.append("WHERE M.Type = ? AND M.ID NOT IN ")
+					.append("( SELECT MovieId ")
+					.append("FROM Rental R ")
+					.append("JOIN Account A ON R.AccountId = A.ID ")
+					.append("WHERE A.CustomerId = ? );")
+					.toString();
+
+			PreparedStatement suggestedMoviesStmt = conn.prepareStatement(suggestedMoviesQuery);
+			suggestedMoviesStmt.setString(1, mostOrderedGenre);
+			suggestedMoviesStmt.setInt(2, Integer.valueOf(customerID.replaceAll("-", "")));
+
+			ResultSet rs = suggestedMoviesStmt.executeQuery();
+
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
 		}
-		/*Sample data ends*/
 		
 		return movies;
 
