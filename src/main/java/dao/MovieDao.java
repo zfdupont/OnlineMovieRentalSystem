@@ -8,6 +8,8 @@ import model.Order;
 import model.Employee;
 import model.Movie;
 
+//import com.mysql.cj.jdbc.Driver;
+
 public class MovieDao {
 
 	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
@@ -119,6 +121,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String sql = new StringBuilder()
@@ -130,15 +133,14 @@ public class MovieDao {
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet rs = st.executeQuery();
-			Movie movie = new Movie();
 			while (rs.next()) {
+				Movie movie = new Movie();
 				movie.setMovieID(rs.getInt("ID"));
 				movie.setMovieName(rs.getString("Name"));
 				movie.setMovieType(rs.getString("Type"));
 				movie.setDistFee(rs.getInt("DistrFee"));
 				movie.setNumCopies(rs.getInt("NumCopies"));
 				movie.setRating(rs.getInt("Rating"));
-
 				movies.add(movie);
 			}
 		} catch (Exception e) {
