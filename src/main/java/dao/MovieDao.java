@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import model.Movie;
 
 public class MovieDao {
 
+	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 	
 	public List<Movie> getMovies() {
 		
@@ -113,17 +115,52 @@ public class MovieDao {
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 5; i++) {
+
+		Connection conn = null;
+
+		try {
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String sql = new StringBuilder()
+					.append("SELECT M.ID, M.Name, M.Type, M.DistrFee, M.NumCopies, M.Rating, SUM(M.DistrFee) AS TotalEarned ")
+					.append("FROM Movie M JOIN Rental R ON M.ID = R.MovieId ")
+					.append("GROUP BY M.ID, M.Name, M.Type, M.DistrFee, M.NumCopies, M.Rating ")
+					.append("ORDER BY TotalEarned DESC")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
 			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
+			while (rs.next()) {
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movie.setDistFee(rs.getInt("DistrFee"));
+				movie.setNumCopies(rs.getInt("NumCopies"));
+				movie.setRating(rs.getInt("Rating"));
+
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
 		}
-		/*Sample data ends*/
+//		/*Sample data begins*/
+//		for (int i = 0; i < 5; i++) {
+//			Movie movie = new Movie();
+//			movie.setMovieID(1);
+//			movie.setMovieName("The Godfather");
+//			movie.setMovieType("Drama");
+//			movies.add(movie);
+//		}
+//		/*Sample data ends*/
 		
 		return movies;
 
