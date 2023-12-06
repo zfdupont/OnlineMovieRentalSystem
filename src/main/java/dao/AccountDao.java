@@ -38,16 +38,16 @@ public class AccountDao {
 					.append("FROM `Order` O ")
 					.append("JOIN Rental R ON O.ID = R.OrderId ")
 					.append("JOIN Movie M ON R.MovieId = M.ID ")
-					.append("WHERE YEAR(O.DateTime) = ? AND MONTH(O.DateTime) = ?")
+					.append("WHERE MONTH(O.DateTime) = ? AND YEAR(O.DateTime) = ?;")
 					.toString();
-
+			
 			String dateString[] = account.getAcctCreateDate().split("-");
 
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setInt(1, Integer.parseInt(dateString[0]));
 			st.setInt(2, Integer.parseInt(dateString[1]));
-
+			
 			ResultSet rs = st.executeQuery();
 
 			if (rs.next()) {
