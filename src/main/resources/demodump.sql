@@ -16,9 +16,9 @@ INSERT INTO Person (SSN, LastName, FirstName, `Address`, ZipCode, Telephone) VAL
 (789123456, 'Warren', 'David', '456 Sunken Street', 11794, '631-632-9987');
 
 -- Inserting into Employee
-INSERT INTO Employee (ID, SSN, StartDate, HourlyRate) VALUES
-(1, 123456789, '2005-11-01', 60),
-(2, 789123456, '2006-02-02', 50);
+INSERT INTO Employee (ID, SSN, Email, StartDate, HourlyRate) VALUES
+(1, 123456789, "david.smith@blockbuster.com",'2005-11-01', 60),
+(2, 789123456, "david.warren@blockbuster.com", '2006-02-02', 50);
 
 -- Inserting into Login
 INSERT INTO `Login` (Username, Password, Role, PersonID) VALUES

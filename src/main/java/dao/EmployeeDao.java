@@ -58,7 +58,7 @@ public class EmployeeDao {
 
 			conn.commit();
 			return "success";
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			if (conn != null) {
 				try {
 					conn.rollback();
@@ -125,22 +125,22 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305?useSSL=false", "root", "root");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
-					.append("    L.Username AS Email, \n")
-					.append("    P.FirstName, \n")
-					.append("    P.LastName, \n")
-					.append("    P.Address, \n")
-					.append("    E.StartDate, \n")
-					.append("    P.ZipCode, \n")
-					.append("    Lc.State, \n")
-					.append("	 Lc.City, \n")
-					.append("    P.Telephone, \n")
-					.append("    E.ID AS EmployeeID, \n")
-					.append("    E.SSN, \n")
-					.append("    E.HourlyRate\n")
+					.append("E.Email, \n")
+					.append("P.FirstName, \n")
+					.append("P.LastName, \n")
+					.append("P.Address, \n")
+					.append("E.StartDate, \n")
+					.append("P.ZipCode, \n")
+					.append("Lc.State, \n")
+					.append("Lc.City, \n")
+					.append("P.Telephone, \n")
+					.append("E.ID AS EmployeeID, \n")
+					.append("E.SSN, \n")
+					.append("E.HourlyRate\n")
 					.append("FROM Employee E\n")
 					.append("JOIN Person P ON E.SSN = P.SSN\n")
 					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
@@ -200,7 +200,7 @@ public class EmployeeDao {
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
-					.append("    L.Username AS Email, \n")
+					.append("    E.Email, \n")
 					.append("    P.FirstName, \n")
 					.append("    P.LastName, \n")
 					.append("    P.Address, \n")
@@ -214,7 +214,6 @@ public class EmployeeDao {
 					.append("FROM Employee E\n")
 					.append("JOIN Person P ON E.SSN = P.SSN\n")
 					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
-					.append("JOIN Login L ON P.SSN = L.PersonID\n")
 					.append("WHERE ")
 					.append(String.format("    E.ID = %s;", employeeID))
 					.toString();
@@ -258,17 +257,18 @@ public class EmployeeDao {
 		Employee employee = new Employee();
 		Connection conn = null;
 		try {
-			// Replace with your actual database connection details
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT P.SSN, P.FirstName, P.LastName, E.Email, SUM(M.DistrFee) AS TotalRevenue")
-					.append("FROM Employee E ")
-					.append("JOIN Rental R ON E.ID = R.CustRepId ")
-					.append("JOIN `Order` O ON R.OrderId = O.ID ")
-					.append("JOIN Movie M ON R.MovieId = M.ID ")
-					.append("GROUP BY E.ID ")
-					.append("ORDER BY TotalRevenue DESC ")
+					.append("SELECT E.SSN, P.FirstName, P.LastName, E.Email, SUM(M.DistrFee) AS TotalRevenue\n")
+					.append("FROM Employee E \n")
+					.append("JOIN Person P ON E.SSN = P.SSN \n")
+					.append("JOIN Rental R ON E.ID = R.CustRepId \n")
+					.append("JOIN `Order` O ON R.OrderId = O.ID \n")
+					.append("JOIN Movie M ON R.MovieId = M.ID \n")
+					.append("GROUP BY E.ID \n")
+					.append("ORDER BY TotalRevenue DESC \n")
 					.append("LIMIT 1;")
 					.toString();
 
@@ -280,8 +280,9 @@ public class EmployeeDao {
 				employee.setFirstName(rs.getString("FirstName"));
 				employee.setLastName(rs.getString("LastName"));
 				employee.setEmail(rs.getString("Email"));
+				System.out.println(employee.getEmail());
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();  // Handle exceptions appropriately
 		} finally {
 			if (conn != null) {

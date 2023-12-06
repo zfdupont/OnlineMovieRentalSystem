@@ -25,8 +25,8 @@ public class LoginDao {
 		
 		/*Sample data begins*/
 		Login login = new Login();
-		login.setRole("customerRepresentative");
-//		login.setRole("manager");
+//		login.setRole("customerRepresentative");
+		login.setRole("manager");
 		return login;
 		/*Sample data ends*/
 		
@@ -44,7 +44,7 @@ public class LoginDao {
 
 		Connection conn = null;
 		try {
-//			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			conn.setAutoCommit(false);
 
@@ -59,7 +59,7 @@ public class LoginDao {
 
 			conn.commit();
 			return "success";
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			if (conn != null) {
 				try {
 					conn.rollback();
