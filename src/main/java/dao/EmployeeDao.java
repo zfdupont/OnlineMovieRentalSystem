@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +21,61 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the employee details and return "success" or "failure" based on result of the database insertion.
 		 */
-		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://your-database-url", "username", "password");
+			conn.setAutoCommit(false);
+
+			PreparedStatement psLocation = conn.prepareStatement(
+				"INSERT IGNORE INTO `Location` (ZipCode, City, State) VALUES (?, ?, ?)"
+			);
+			psLocation.setInt(1, employee.getZipCode());
+			psLocation.setString(2, employee.getCity());
+			psLocation.setString(3, employee.getState());
+			psLocation.executeUpdate();
+
+			PreparedStatement psPerson = conn.prepareStatement(
+					"INSERT INTO Person (SSN, LastName, FirstName, Address, ZipCode, Telephone) VALUES (?, ?, ?, ?, ?, ?)"
+			);
+			psPerson.setInt(1, Integer.parseInt(employee.getEmployeeID())); // holds SSN value fsr?
+			psPerson.setString(2, employee.getLastName());
+			psPerson.setString(3, employee.getFirstName());
+			psPerson.setString(4, employee.getAddress());
+			psPerson.setInt(5, employee.getZipCode());
+			psPerson.setString(6, employee.getTelephone());
+			psPerson.executeUpdate();
+
+
+			PreparedStatement psEmployee = conn.prepareStatement(
+					"INSERT INTO Employee (SSN, StartDate, HourlyRate) VALUES (?, ?, ?, ?)"
+			);
+			psEmployee.setInt(1, Integer.parseInt(employee.getEmployeeID()));
+			psEmployee.setString(2, employee.getStartDate());
+			psEmployee.setFloat(3, employee.getHourlyRate());
+			psEmployee.executeUpdate();
+
+			conn.commit();
+			return "success";
+		} catch (SQLException e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			e.printStackTrace();
+			return "failure";
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 	}
 
@@ -64,25 +116,64 @@ public class EmployeeDao {
 		 * Each record is required to be encapsulated as a "Employee" class object and added to the "employees" List
 		 */
 
-		List<Employee> employees = new ArrayList<Employee>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Employee employee = new Employee();
-			employee.setEmail("shiyong@cs.sunysb.edu");
-			employee.setFirstName("Shiyong");
-			employee.setLastName("Lu");
-			employee.setAddress("123 Success Street");
-			employee.setCity("Stony Brook");
-			employee.setStartDate("2006-10-17");
-			employee.setState("NY");
-			employee.setZipCode(11790);
-			employee.setTelephone("5166328959");
-			employee.setEmployeeID("631-413-5555");
-			employee.setHourlyRate(100);
-			employees.add(employee);
+		List<Employee> employees = new ArrayList<>();
+
+		Connection conn = null;
+		Statement st;
+		ResultSet rs;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			st = conn.createStatement();
+			String query = new StringBuilder()
+					.append("SELECT \n")
+					.append("    L.Username AS Email, \n")
+					.append("    P.FirstName, \n")
+					.append("    P.LastName, \n")
+					.append("    P.Address, \n")
+					.append("    E.StartDate, \n")
+					.append("    P.ZipCode, \n")
+					.append("    P.Telephone, \n")
+					.append("    E.ID AS EmployeeID, \n")
+					.append("    E.HourlyRate\n")
+					.append("FROM \n")
+					.append("    Employee E\n")
+					.append("JOIN \n")
+					.append("    Person P ON E.SSN = P.SSN\n")
+					.append("JOIN \n")
+					.append("    Login L ON P.SSN = L.PersonID\n")
+					.append("WHERE \n")
+					.append("    L.Role IN ('Manager', 'CustomerRep');\n")
+					.toString();
+			rs = st.executeQuery(query);
+			while(rs.next()) {
+				Employee employee = new Employee();
+
+				employee.setEmail(rs.getString("Email"));
+				employee.setFirstName(rs.getString("FirstName"));
+				employee.setLastName(rs.getString("LastName"));
+				employee.setAddress(rs.getString("Address"));
+				employee.setStartDate(rs.getString("StartDate"));
+				employee.setState(rs.getString("State"));
+				employee.setZipCode(rs.getInt("ZipCode"));
+				employee.setTelephone(rs.getString("Telephone"));
+				employee.setEmployeeID(rs.getString("ID"));
+				employee.setHourlyRate(rs.getInt("HourlyRate"));
+
+				employees.add(employee);
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		/*Sample data ends*/
 		
 		return employees;
 	}
@@ -96,20 +187,60 @@ public class EmployeeDao {
 		 */
 
 		Employee employee = new Employee();
-		
-		/*Sample data begins*/
-		employee.setEmail("shiyong@cs.sunysb.edu");
-		employee.setFirstName("Shiyong");
-		employee.setLastName("Lu");
-		employee.setAddress("123 Success Street");
-		employee.setCity("Stony Brook");
-		employee.setStartDate("2006-10-17");
-		employee.setState("NY");
-		employee.setZipCode(11790);
-		employee.setTelephone("5166328959");
-		employee.setEmployeeID("631-413-5555");
-		employee.setHourlyRate(100);
-		/*Sample data ends*/
+
+		Connection conn = null;
+		Statement st;
+		ResultSet rs;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			st = conn.createStatement();
+			String query = new StringBuilder()
+					.append("SELECT \n")
+					.append("    L.Username AS Email, \n")
+					.append("    P.FirstName, \n")
+					.append("    P.LastName, \n")
+					.append("    P.Address, \n")
+					.append("    E.StartDate, \n")
+					.append("    P.ZipCode, \n")
+					.append("    P.Telephone, \n")
+					.append("    E.ID AS EmployeeID, \n")
+					.append("    E.HourlyRate\n")
+					.append("FROM \n")
+					.append("    Employee E\n")
+					.append("JOIN \n")
+					.append("    Person P ON E.SSN = P.SSN\n")
+					.append("JOIN \n")
+					.append("    Login L ON P.SSN = L.PersonID\n")
+					.append("WHERE \n")
+					.append(String.format("    E.ID = %s;", employeeID))
+					.toString();
+			rs = st.executeQuery(query);
+			if(rs.next()) {
+				employee.setEmail(rs.getString("Email"));
+				employee.setFirstName(rs.getString("FirstName"));
+				employee.setLastName(rs.getString("LastName"));
+				employee.setAddress(rs.getString("Address"));
+				employee.setStartDate(rs.getString("StartDate"));
+				employee.setState(rs.getString("State"));
+				employee.setZipCode(rs.getInt("ZipCode"));
+				employee.setTelephone(rs.getString("Telephone"));
+				employee.setEmployeeID(Integer.toString(rs.getInt("ID")));
+				employee.setHourlyRate(rs.getInt("HourlyRate"));
+				employee.setEmployeeID("EmployeeID");
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		return employee;
 	}
@@ -139,8 +270,33 @@ public class EmployeeDao {
 		 * username, which is the Employee's email address who's Employee ID has to be fetched, is given as method parameter
 		 * The Employee ID is required to be returned as a String
 		 */
+		Connection conn;
+		Statement st;
+		ResultSet rs;
 
-		return "111-11-1111";
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			st = conn.createStatement();
+			String query = new StringBuilder()
+					.append("SELECT \n")
+					.append("    E.ID AS EmployeeID\n")
+					.append("FROM \n")
+					.append("    Employee E\n")
+					.append("JOIN \n")
+					.append("    Person P ON E.SSN = P.SSN\n")
+					.append("JOIN \n")
+					.append("    Login L ON P.SSN = L.PersonID\n")
+					.append("WHERE \n")
+					.append(String.format("    L.Username = '[Username]';", username)).toString();
+			rs = st.executeQuery(query);
+			if(rs.next()) {
+				return rs.getString("EmployeeID");
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		}
+		return null;
 	}
 
 }
