@@ -16,9 +16,15 @@ INSERT INTO Person (SSN, LastName, FirstName, `Address`, ZipCode, Telephone) VAL
 (789123456, 'Warren', 'David', '456 Sunken Street', 11794, '631-632-9987');
 
 -- Inserting into Employee
-INSERT INTO Employee (ID, SSN, StartDate, HourlyRate, Title) VALUES
-(1, 123456789, '2005-11-01', 60, 'CustomerRep'),
-(2, 789123456, '2006-02-02', 50, 'Manager');
+INSERT INTO Employee (ID, SSN, StartDate, HourlyRate) VALUES
+(1, 123456789, '2005-11-01', 60),
+(2, 789123456, '2006-02-02', 50);
+
+-- Inserting into Login
+INSERT INTO `Login` (Username, Password, Role, PersonID) VALUES
+("david.smith@blockbuster.com", "password", 'CustomerRep', 123456789),
+("david.warren@blockbuster.com", "password", 'Manager', 789123456),
+("victor.du@x.com", "password", 'Customer', 222222222);
 
 -- Inserting into Customer
 INSERT INTO Customer (ID, Email, Rating, CreditCardNumber) VALUES

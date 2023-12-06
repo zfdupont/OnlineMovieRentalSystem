@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `AppearedIn`;
 DROP TABLE IF EXISTS `Account`;
 DROP TABLE IF EXISTS `Customer`;
 DROP TABLE IF EXISTS `Employee`;
+DROP TABLE IF EXISTS `Login`;
 DROP TABLE IF EXISTS `Person`;
 DROP TABLE IF EXISTS `Movie`;
 DROP TABLE IF EXISTS `Actor`;
@@ -40,13 +41,13 @@ CREATE TABLE Person (
 );
 
 CREATE TABLE Employee (
-    ID INTEGER /* CHECK (ID > 0 AND ID < 1000000000) */,
-    SSN INTEGER,
-    StartDate DATE,
-    HourlyRate INTEGER,
-    Title CHAR(20) CHECK ( Title in ('CustomerRep', 'Manager') ),
+    ID                  INTEGER AUTO_INCREMENT /* CHECK (ID > 0 AND ID < 1000000000) */,
+    SSN                 INTEGER,
+    Email               CHAR(32),
+    StartDate           DATE,
+    HourlyRate          INTEGER,
     PRIMARY KEY (ID),
-    FOREIGN KEY (SSN) REFERENCES Person (SSN)
+    FOREIGN KEY (SSN)   REFERENCES Person (SSN)
     ON DELETE NO ACTION 
     ON UPDATE CASCADE 
 );
@@ -143,4 +144,15 @@ CREATE TABLE AppearedIn (
     FOREIGN KEY (MovieId) REFERENCES Movie (ID) 
     ON DELETE NO ACTION
     ON UPDATE CASCADE 
+);
+
+CREATE TABLE Login (
+    Username    CHAR(32) NOT NULL,  -- Assuming username is the email
+    Password    VARCHAR(255) NOT NULL DEFAULT 'password', -- Storing password as a hash for security
+    Role        CHAR(20) CHECK (Role IN ('Customer', 'Manager', 'CustomerRep')),
+    PersonID    INTEGER NOT NULL,
+    PRIMARY KEY (Username),
+    FOREIGN KEY (PersonID) REFERENCES Person (SSN)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );

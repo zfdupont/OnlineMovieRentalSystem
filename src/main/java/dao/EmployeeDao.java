@@ -24,7 +24,8 @@ public class EmployeeDao {
 
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://your-database-url", "username", "password");
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305", "root", "root");
 			conn.setAutoCommit(false);
 
 			PreparedStatement psLocation = conn.prepareStatement(
@@ -124,7 +125,7 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305?useSSL=false", "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -134,17 +135,17 @@ public class EmployeeDao {
 					.append("    P.Address, \n")
 					.append("    E.StartDate, \n")
 					.append("    P.ZipCode, \n")
+					.append("    Lc.State, \n")
+					.append("	 Lc.City, \n")
 					.append("    P.Telephone, \n")
 					.append("    E.ID AS EmployeeID, \n")
+					.append("    E.SSN, \n")
 					.append("    E.HourlyRate\n")
-					.append("FROM \n")
-					.append("    Employee E\n")
-					.append("JOIN \n")
-					.append("    Person P ON E.SSN = P.SSN\n")
-					.append("JOIN \n")
-					.append("    Login L ON P.SSN = L.PersonID\n")
-					.append("WHERE \n")
-					.append("    L.Role IN ('Manager', 'CustomerRep');\n")
+					.append("FROM Employee E\n")
+					.append("JOIN Person P ON E.SSN = P.SSN\n")
+					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
+					.append("JOIN Login L ON P.SSN = L.PersonID\n")
+					.append("WHERE L.Role IN ('Manager', 'CustomerRep');")
 					.toString();
 			rs = st.executeQuery(query);
 			while(rs.next()) {
@@ -156,9 +157,10 @@ public class EmployeeDao {
 				employee.setAddress(rs.getString("Address"));
 				employee.setStartDate(rs.getString("StartDate"));
 				employee.setState(rs.getString("State"));
+				employee.setCity(rs.getString("City"));
 				employee.setZipCode(rs.getInt("ZipCode"));
 				employee.setTelephone(rs.getString("Telephone"));
-				employee.setEmployeeID(rs.getString("ID"));
+				employee.setEmployeeID(rs.getString("SSN"));
 				employee.setHourlyRate(rs.getInt("HourlyRate"));
 
 				employees.add(employee);
@@ -194,7 +196,7 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305?useSSL=false", "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -205,15 +207,15 @@ public class EmployeeDao {
 					.append("    E.StartDate, \n")
 					.append("    P.ZipCode, \n")
 					.append("    P.Telephone, \n")
+					.append("    Lc.State, \n")
+					.append("	 Lc.City, \n")
 					.append("    E.ID AS EmployeeID, \n")
 					.append("    E.HourlyRate\n")
-					.append("FROM \n")
-					.append("    Employee E\n")
-					.append("JOIN \n")
-					.append("    Person P ON E.SSN = P.SSN\n")
-					.append("JOIN \n")
-					.append("    Login L ON P.SSN = L.PersonID\n")
-					.append("WHERE \n")
+					.append("FROM Employee E\n")
+					.append("JOIN Person P ON E.SSN = P.SSN\n")
+					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
+					.append("JOIN Login L ON P.SSN = L.PersonID\n")
+					.append("WHERE ")
 					.append(String.format("    E.ID = %s;", employeeID))
 					.toString();
 			rs = st.executeQuery(query);
@@ -223,6 +225,7 @@ public class EmployeeDao {
 				employee.setLastName(rs.getString("LastName"));
 				employee.setAddress(rs.getString("Address"));
 				employee.setStartDate(rs.getString("StartDate"));
+				employee.setCity(rs.getString("City"));
 				employee.setState(rs.getString("State"));
 				employee.setZipCode(rs.getInt("ZipCode"));
 				employee.setTelephone(rs.getString("Telephone"));
@@ -276,7 +279,7 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE350", "root", "root");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305", "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
