@@ -69,15 +69,15 @@ public class CustomerDao {
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT C.ID AS CustomerID, P.FirstName, P.LastName, SUM(M.DistrFee) AS TotalSpent ")
-					.append("FROM Customer C ")
-					.append("JOIN Person P ON C.ID = P.SSN ")
-					.append("JOIN Account A ON C.ID = A.CustomerId ")
-					.append("JOIN Rental R ON A.ID = R.AccountId ")
-					.append("JOIN `Order` O ON R.OrderId = O.ID ")
-					.append("JOIN Movie M ON R.MovieId = M.ID ")
-					.append("GROUP BY C.ID, P.FirstName, P.LastName ")
-					.append("ORDER BY TotalSpent DESC")
+					.append("SELECT C.ID AS CustomerID, P.FirstName, C.Email, P.LastName, SUM(M.DistrFee) AS TotalSpent \n")
+					.append("FROM Customer C \n")
+					.append("JOIN Person P ON C.ID = P.SSN \n")
+					.append("JOIN Account A ON C.ID = A.CustomerId \n")
+					.append("JOIN Rental R ON A.ID = R.AccountId \n")
+					.append("JOIN `Order` O ON R.OrderId = O.ID \n")
+					.append("JOIN Movie M ON R.MovieId = M.ID \n")
+					.append("GROUP BY C.ID, P.FirstName, P.LastName \n")
+					.append("ORDER BY TotalSpent DESC \n")
 					.append("LIMIT 1;")
 					.toString();
 
@@ -85,10 +85,10 @@ public class CustomerDao {
 			ResultSet rs = st.executeQuery();
 
 			if (rs.next()) {
-				customer.setCustomerID(String.valueOf(rs.getInt("SSN")));
-				customer.setFirstName(rs.getString("FirstName"));
-				customer.setLastName(rs.getString("LastName"));
-				customer.setEmail(rs.getString("Email"));
+				customer.setCustomerID(String.valueOf(rs.getInt("CustomerID")));
+				customer.setFirstName(rs.getString("P.FirstName"));
+				customer.setLastName(rs.getString("P.LastName"));
+				customer.setEmail(rs.getString("C.Email"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();  // Handle exceptions appropriately
