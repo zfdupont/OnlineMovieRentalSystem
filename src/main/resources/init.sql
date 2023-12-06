@@ -66,7 +66,7 @@ CREATE TABLE Customer (
 
 
 CREATE TABLE Account (
-    ID INTEGER,
+    ID INTEGER AUTO_INCREMENT,
     DateOpened DATE,
     `Type` CHAR(20) CHECK ( `Type` IN ('Limited', 'Unlimited-1', 'Unlimited-2', 'Unlimited-3') ),
     CustomerId INTEGER,
@@ -77,14 +77,14 @@ CREATE TABLE Account (
 );
 
 CREATE TABLE `Order` (
-    ID INTEGER,
+    ID INTEGER AUTO_INCREMENT,
     `DateTime` DATETIME, 
     ReturnDate DATE, 
     PRIMARY KEY (ID) 
 );
 
 CREATE TABLE Movie (
-    ID INTEGER,
+    ID INTEGER AUTO_INCREMENT,
     `Name` CHAR(20) NOT NULL, 
     `Type` CHAR(20) NOT NULL, 
     Rating INTEGER,

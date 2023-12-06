@@ -90,10 +90,45 @@ public class MovieDao {
 		 * You need to handle the database insertion of the movie details and return "success" or "failure" based on result of the database insertion.
 		 */
 		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn.setAutoCommit(false);
 
+			PreparedStatement psMovie = conn.prepareStatement(
+				"INSERT INTO Movie (`Name`, `Type`, Rating, DistrFee, NumCopies) VALUES (?,?,?,?,?)"
+			);
+			psMovie.setString(1, movie.getMovieName());
+			psMovie.setString(2, movie.getMovieType());
+			psMovie.setInt(3, movie.getRating());
+			psMovie.setInt(4, movie.getDistFee());
+			psMovie.setInt(5, movie.getNumCopies());
+			psMovie.executeUpdate();
+
+			conn.commit();
+			
+			return "success";
+			
+		} catch (Exception e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			e.printStackTrace();
+			return "failure";
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public String editMovie(Movie movie) {
@@ -451,15 +486,17 @@ public List<Movie> getQueueOfMovies(String customerID){
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT M.ID, M.Name, M.Type, A.Name AS ActorName ")
+					.append("SELECT M.ID, M.Name, M.Type ")
 					.append("FROM Movie M ")
 					.append("JOIN AppearedIn AI ON M.ID = AI.MovieId ")
 					.append("JOIN Actor A ON AI.ActorId = A.ID ")
-					.append(String.format("WHERE A.Name LIKE '%%%s%%';", actorName))
+					.append("WHERE A.Name LIKE CONCAT('%',?,'%');")
 					.toString();
 
 			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, actorName);
 			ResultSet rs = st.executeQuery();
+			System.out.println(rs.getFetchSize());
 			while (rs.next()) {
 				Movie movie = new Movie();
 				movie.setMovieID(rs.getInt("ID"));
@@ -467,6 +504,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 				movie.setMovieType(rs.getString("Type"));
 				movies.add(movie);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
 		} finally {
@@ -542,14 +580,15 @@ public List<Movie> getQueueOfMovies(String customerID){
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
-					.append("JOIN Rental R ON ID = R.MovieID")
-					.append("WHERE Name LIKE '%?%';")
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")
+					.append("JOIN Rental R ON ID = R.MovieID ")
+					.append("WHERE Name LIKE '%").append(movieName).append("%';")
 					.toString();
-
+			
+			System.out.println(query);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, movieName);
+//			st.setString(1, movieName);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				Movie movie = new Movie();
@@ -586,12 +625,12 @@ public List<Movie> getQueueOfMovies(String customerID){
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")
 					.append("JOIN Rental R ON M.ID = R.MovieID ")
 					.append("JOIN Account A ON R.AccountID = A.ID ")
 					.append("JOIN Customer C ON A.CustomerID = C.ID ")
 					.append("JOIN Person P ON C.ID = P.SSN ")
-					.append("WHERE (P.FirstName LIKE '%?%' OR P.LastName LIKE '%?%');")
+					.append("WHERE (P.FirstName LIKE CONCAT('%',?,'%') OR P.LastName LIKE CONCAT('%',?,'%'));")
 					.toString();
 
 			PreparedStatement st = conn.prepareStatement(query);
@@ -637,9 +676,9 @@ public List<Movie> getQueueOfMovies(String customerID){
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			String query = new StringBuilder()
-					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
-					.append("JOIN Rental R ON ID = R.MovieID")
-					.append("WHERE `Type` LIKE '?';")
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")
+					.append("JOIN Rental R ON ID = R.MovieID ")
+					.append("WHERE M.Type = ?;")
 					.toString();
 
 			PreparedStatement st = conn.prepareStatement(query);

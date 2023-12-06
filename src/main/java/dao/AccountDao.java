@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,10 +72,41 @@ public class AccountDao {
 	public String setAccount(String customerID, String accountType) {
 
 		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn.setAutoCommit(false);
 
+			String query = "UPDATE Account SET `Type` = ? WHERE CustomerId = ?";
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            statement.setString(1, accountType);
+            statement.setInt(2, Integer.valueOf(customerID.replaceAll("-", "")));
+            
+            statement.executeUpdate();
+            
+			conn.commit();
+			return "success";
+		} catch (Exception e) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			e.printStackTrace();
+			return "failure";
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 

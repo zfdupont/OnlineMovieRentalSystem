@@ -25,8 +25,9 @@ public class LoginDao {
 		
 		/*Sample data begins*/
 		Login login = new Login();
+		login.setRole("customer");
 //		login.setRole("customerRepresentative");
-		login.setRole("manager");
+//		login.setRole("manager");
 		return login;
 		/*Sample data ends*/
 		
