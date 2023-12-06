@@ -405,7 +405,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String query = String.format("SELECT * FROM Movie WHERE Name LIKE %%%s%%", movieName);
+			String query = String.format("SELECT * FROM Movie WHERE Name LIKE '%%%s%%'", movieName);
 
 			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
@@ -504,7 +504,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String query = String.format("SELECT * FROM Movie WHERE `Type` = %s", movieType);
+			String query = String.format("SELECT * FROM Movie WHERE `Type` = '%s'", movieType);
 
 			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
@@ -537,20 +537,42 @@ public List<Movie> getQueueOfMovies(String customerID){
 		
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
-		}
-		/*Sample data ends*/
-		
 
-		
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
+					.append("JOIN Rental R ON ID = R.MovieID")
+					.append("WHERE Name LIKE '%?%';")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, movieName);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
+		}
+
 		return movies;
 	}
 	
@@ -559,17 +581,45 @@ public List<Movie> getQueueOfMovies(String customerID){
 		
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
+
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
+					.append("JOIN Rental R ON M.ID = R.MovieID ")
+					.append("JOIN Account A ON R.AccountID = A.ID ")
+					.append("JOIN Customer C ON A.CustomerID = C.ID ")
+					.append("JOIN Person P ON C.ID = P.SSN ")
+					.append("WHERE (P.FirstName LIKE '%?%' OR P.LastName LIKE '%?%');")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, customerName);
+			st.setString(2, customerName);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
 		}
-		/*Sample data ends*/
 		
 
 		
@@ -582,19 +632,41 @@ public List<Movie> getQueueOfMovies(String customerID){
 	
 
 		List<Movie> movies = new ArrayList<Movie>();
-				
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
-		}
-		/*Sample data ends*/
-		
 
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie ")
+					.append("JOIN Rental R ON ID = R.MovieID")
+					.append("WHERE `Type` LIKE '?';")
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, movieType);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
+		}
 		
 		return movies;
 	}
