@@ -9,6 +9,7 @@ public class Login {
 	private String username;
 	private String password;
 	private String role;
+	private String personID;
 	public String getRole() {
 		return role;
 	}
@@ -27,6 +28,13 @@ public class Login {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
 
+
+	public String getPersonID() {
+		return personID;
+	}
+
+	public void setPersonID(String personID) {
+		this.personID = personID;
+	}
 }

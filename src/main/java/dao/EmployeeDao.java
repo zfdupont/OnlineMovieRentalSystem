@@ -11,7 +11,7 @@ public class EmployeeDao {
 	/*
 	 * This class handles all the database operations related to the employee table
 	 */
-	
+	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 	public String addEmployee(Employee employee) {
 
 		/*
@@ -25,7 +25,7 @@ public class EmployeeDao {
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305", "root", "root");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			conn.setAutoCommit(false);
 
 			PreparedStatement psLocation = conn.prepareStatement(
@@ -37,7 +37,7 @@ public class EmployeeDao {
 			psLocation.executeUpdate();
 
 			PreparedStatement psPerson = conn.prepareStatement(
-					"INSERT INTO Person (SSN, LastName, FirstName, Address, ZipCode, Telephone) VALUES (?, ?, ?, ?, ?, ?)"
+					"INSERT IGNORE INTO Person (SSN, LastName, FirstName, Address, ZipCode, Telephone) VALUES (?, ?, ?, ?, ?, ?)"
 			);
 			psPerson.setInt(1, Integer.parseInt(employee.getEmployeeID())); // holds SSN value fsr?
 			psPerson.setString(2, employee.getLastName());
@@ -196,7 +196,7 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305?useSSL=false", "root", "root");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -279,7 +279,7 @@ public class EmployeeDao {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/CSE305", "root", "root");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")

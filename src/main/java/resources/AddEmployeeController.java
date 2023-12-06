@@ -75,6 +75,7 @@ public class AddEmployeeController extends HttpServlet {
 			login.setUsername(email);
 			login.setPassword(password);
 			login.setRole("CustomerRep");
+			login.setPersonID(employee.getEmployeeID());
 			LoginDao loginDao = new LoginDao();
 			String loginResult = loginDao.addUser(login);
 			if(loginResult.equals("success")) {
