@@ -30,9 +30,9 @@ public class MovieDao {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String sql = "SELECT ID, Name, Type, DistrFee, NumCopies, Rating FROM Movie";
+			String query = "SELECT ID, Name, Type, DistrFee, NumCopies, Rating FROM Movie";
 
-			PreparedStatement st = conn.prepareStatement(sql);
+			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				Movie movie = new Movie();
@@ -57,7 +57,6 @@ public class MovieDao {
 		}
 		
 		return movies;
-
 	}
 	
 	public Movie getMovie(String movieID) {
@@ -143,14 +142,14 @@ public class MovieDao {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String sql = new StringBuilder()
+			String query = new StringBuilder()
 					.append("SELECT M.ID, M.Name, M.Type, M.DistrFee, M.NumCopies, M.Rating, SUM(M.DistrFee) AS TotalEarned ")
 					.append("FROM Movie M JOIN Rental R ON M.ID = R.MovieId ")
 					.append("GROUP BY M.ID, M.Name, M.Type, M.DistrFee, M.NumCopies, M.Rating ")
 					.append("ORDER BY TotalEarned DESC")
 					.toString();
 
-			PreparedStatement st = conn.prepareStatement(sql);
+			PreparedStatement st = conn.prepareStatement(query);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				Movie movie = new Movie();
@@ -355,15 +354,34 @@ public List<Movie> getQueueOfMovies(String customerID){
 		 */
 		
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 6; i++) {
-			Movie movie = new Movie();
-			movie.setMovieType("Drama");
-			movies.add(movie);
+
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = "SELECT `Type` FROM Movie";
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
 		}
-		/*Sample data ends*/
-		
+
 		return movies;
 	}
 
@@ -380,20 +398,36 @@ public List<Movie> getQueueOfMovies(String customerID){
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
-		}
-		/*Sample data ends*/
-		
 
-		
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = String.format("SELECT * FROM Movie WHERE Name LIKE %%%s%%", movieName);
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
+		}
+
 		return movies;
 	}
 	
@@ -410,19 +444,41 @@ public List<Movie> getQueueOfMovies(String customerID){
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
-		}
-		/*Sample data ends*/
-		
 
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = new StringBuilder()
+					.append("SELECT M.ID, M.Name, M.Type, A.Name AS ActorName ")
+					.append("FROM Movie M ")
+					.append("JOIN AppearedIn AI ON M.ID = AI.MovieId ")
+					.append("JOIN Actor A ON AI.ActorId = A.ID ")
+					.append(String.format("WHERE A.Name LIKE '%%%s%%';", actorName))
+					.toString();
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
+		}
 		
 		return movies;
 	}
@@ -441,17 +497,35 @@ public List<Movie> getQueueOfMovies(String customerID){
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-				
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-			
+
+		Connection conn = null;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+			String query = String.format("SELECT * FROM Movie WHERE `Type` = %s", movieType);
+
+			PreparedStatement st = conn.prepareStatement(query);
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				Movie movie = new Movie();
+				movie.setMovieID(rs.getInt("ID"));
+				movie.setMovieName(rs.getString("Name"));
+				movie.setMovieType(rs.getString("Type"));
+				movies.add(movie);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(); // Handle exceptions appropriately
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace(); // Handle exceptions during close
+				}
+			}
 		}
-		/*Sample data ends*/
 		
 
 		
