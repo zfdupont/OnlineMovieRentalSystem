@@ -161,9 +161,51 @@ public class MovieDao {
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
 		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+		Connection conn = null;
+		boolean editSuccessful;
+	    try {
+	    	Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn.setAutoCommit(false); // Start transaction
+
+	        String sql = "UPDATE Movie SET Name = ?, Type = ?, DistrFee = ?, NumCopies = ?, Rating = ? WHERE ID = ?";
+
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        statement.setString(1, movie.getMovieName());
+	        statement.setString(2, movie.getMovieType());
+	        statement.setInt(3, movie.getDistFee());
+	        statement.setInt(4, movie.getNumCopies());
+	        statement.setInt(5, movie.getRating());
+	        statement.setInt(6, movie.getMovieID());
+
+	        int rowsAffected = statement.executeUpdate();
+	        editSuccessful = rowsAffected > 0;
+	        if (editSuccessful) {
+	            conn.commit(); // Commit transaction
+	            
+	        } else {
+	            conn.rollback(); // Rollback transaction if no rows affected
+	        }
+	    } catch (Exception e) {
+	        if (conn != null) {
+	            try {
+	                conn.rollback(); // Rollback transaction on exception
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        if (conn != null) {
+	            try {
+	                conn.setAutoCommit(true); // Reset auto-commit
+	                conn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	    return editSuccessful ? "success" : "failure";
 
 	}
 
@@ -174,10 +216,46 @@ public class MovieDao {
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
 		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+		Connection conn = null;
+	    boolean deleteSuccessful = false;
 
+	    try {
+	    	Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+	        conn.setAutoCommit(false); // Start transaction
+
+	        String sql = "DELETE FROM Movie WHERE ID = ?";
+
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        statement.setInt(1, Integer.parseInt(movieID));
+
+	        int rowsAffected = statement.executeUpdate();
+	        if (rowsAffected > 0) {
+	            conn.commit(); // Commit transaction
+	            deleteSuccessful = true;
+	        } else {
+	            conn.rollback(); // Rollback transaction if no rows affected
+	        }
+	    } catch (SQLException e) {
+	        if (conn != null) {
+	            try {
+	                conn.rollback(); // Rollback transaction on exception
+	            } catch (SQLException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        if (conn != null) {
+	            try {
+	                conn.setAutoCommit(true); // Reset auto-commit
+	                conn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+	    return deleteSuccessful ? "success" : "failure";
 	}
 	
 	
@@ -286,7 +364,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
-			// Replace with your database connection details
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
 			// Step 1: Find the most ordered genre for the given customer
@@ -325,24 +403,22 @@ public class MovieDao {
 			// Step 2: Recommend movies from the most ordered genre that the customer hasn't ordered yet but
 			// users in the customer's area have
 
-			String suggestedMoviesQuery = new StringBuilder()
-					.append("SELECT DISTINCT M.ID, M.Name, M.Type ")
-					.append("FROM Movie M ")
-					.append("JOIN Rental R ON M.ID = R.MovieId ")
-					.append("JOIN Account A ON R.AccountId = A.ID ")
-					.append("JOIN Customer C ON A.CustomerId = C.ID ")
-					.append("JOIN Person P ON C.ID = P.SSN ")
-					.append("WHERE M.Type = ? AND M.ID NOT IN ")
-					.append("( SELECT MovieId ")
-					.append("	FROM Rental ")
-					.append("	WHERE AccountId = A.ID ")
-					.append(") AND CAST(P.ZipCode AS CHAR) LIKE ? ")
-					.append("ORDER BY M.Name")
-					.toString();
+			String suggestedMoviesQuery = "SELECT DISTINCT M.ID, M.Name, M.Type " +
+                    "FROM Movie M " +
+                    "JOIN Rental R ON M.ID = R.MovieId " +
+                    "JOIN Account A ON R.AccountId = A.ID " +
+                    "JOIN Customer C ON A.CustomerId = C.ID " +
+                    "JOIN Person P ON C.ID = P.SSN " +
+                    "WHERE M.Type = ? AND M.ID NOT IN ( " +
+                    "    SELECT MovieId " +
+                    "    FROM Rental " +
+                    "    WHERE AccountId = A.ID " +
+                    ") AND CAST(P.ZipCode AS CHAR) LIKE ? " +
+                    "ORDER BY M.Name";
 
 			PreparedStatement suggestedMoviesStmt = conn.prepareStatement(suggestedMoviesQuery);
 			suggestedMoviesStmt.setString(1, mostOrderedGenre);
-			suggestedMoviesStmt.setString(2, customerZipPrefix);
+			suggestedMoviesStmt.setString(2, customerZipPrefix + "%");
 
 			ResultSet rs = suggestedMoviesStmt.executeQuery();
 
@@ -379,14 +455,43 @@ public class MovieDao {
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movies.add(movie);
-		}
-		/*Sample data ends*/
+		Connection conn = null;
+
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+            String sql = "SELECT M.ID, M.Name, M.Type " +
+                         "FROM Movie M " +
+                         "JOIN Rental R ON M.ID = R.MovieId " +
+                         "JOIN `Order` O ON R.OrderId = O.ID " +
+                         "JOIN Account A ON R.AccountId = A.ID " +
+                         "WHERE A.CustomerId = ? AND O.ReturnDate IS NULL";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, Integer.valueOf(customerID.replaceAll("-", "")));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+            	Movie movie = new Movie();
+                movie.setMovieID(resultSet.getInt("ID"));
+                movie.setMovieName(resultSet.getString("Name"));
+                movie.setMovieType(resultSet.getString("Type"));
+                movies.add(movie);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle exceptions appropriately
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle exceptions during close
+                }
+            }
+        }
+
 		
 		return movies;
 		
@@ -404,15 +509,40 @@ public List<Movie> getQueueOfMovies(String customerID){
 		 */
 
 		List<Movie> movies = new ArrayList<Movie>();
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Movie movie = new Movie();
-			movie.setMovieID(1);
-			movie.setMovieName("The Godfather");
-			movie.setMovieType("Drama");
-			movies.add(movie);
-		}
-		/*Sample data ends*/
+		Connection conn = null;
+
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+            
+            String sql = "SELECT MQ.MovieId, M.Name, M.Type " +
+                         "FROM MovieQ MQ " +
+                         "JOIN Movie M ON MQ.MovieId = M.ID " +
+                         "WHERE MQ.AccountId IN (SELECT ID FROM Account WHERE CustomerId = ?)";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, Integer.valueOf(customerID.replaceAll("-", "")));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+            	Movie movie = new Movie();
+                movie.setMovieID(resultSet.getInt("MovieID"));
+                movie.setMovieName(resultSet.getString("Name"));
+                movie.setMovieType(resultSet.getString("Type"));
+                movies.add(movie);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle exceptions appropriately
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle exceptions during close
+                }
+            }
+        }
 		
 		return movies;
 	}

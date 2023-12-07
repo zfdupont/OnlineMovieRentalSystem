@@ -36,7 +36,7 @@ public class GetOrderHistoryController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String customerID = (String)request.getSession(false).getAttribute("customerID");
+		String customerID = (String)request.getSession(true).getAttribute("customerID");
 		
 		RentalDao rentalDao = new RentalDao();
 		List<Rental> rentals = new ArrayList<Rental>();

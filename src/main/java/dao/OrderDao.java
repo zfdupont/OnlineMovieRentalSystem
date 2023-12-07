@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,18 +46,44 @@ public class OrderDao {
 		 * Query to get data about all the orders in which a customer participated should be implemented
 		 * customerID is the customer's primary key, given as method parameter
 		 */
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Order order = new Order();
-			order.setOrderID(1);
-			order.setDateTime("11-11-09 10:00");
-			order.setReturnDate("11-14-09");
-			orders.add(order);
-		}
-		/*Sample data ends*/
-		
-		return orders;
+		return null;
+//		Connection conn = null;
+//
+//        try {
+//            conn = DriverManager.getConnection("jdbc:mysql://your-database-url", "username", "password");
+//
+//            String sql = "SELECT O.ID AS OrderId, R.MovieId, R.CustRepId " +
+//                    "FROM `Order` O " +
+//                    "JOIN Rental R ON O.ID = R.OrderId " +
+//                    "JOIN Account A ON R.AccountId = A.ID " +
+//                    "WHERE A.CustomerId = ?";
+//
+//            PreparedStatement statement = conn.prepareStatement(sql);
+//            statement.setInt(1, Integer.valueOf(customerID.replaceAll("-", "")));
+//
+//            ResultSet resultSet = statement.executeQuery();
+//
+//            while (resultSet.next()) {
+//            	Order order = new Order();
+//            	int orderId = resultSet.getInt("OrderId");
+//                int movieId = resultSet.getInt("MovieId");
+//                int custRepId = resultSet.getInt("CustRepId");
+//                order.setOrderID(orderId); order.setMovieID(movieId); order.setCustReprID(custRepId);
+//                orders.add(order);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace(); // Handle exceptions appropriately
+//        } finally {
+//            if (conn != null) {
+//                try {
+//                    conn.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace(); // Handle exceptions during close
+//                }
+//            }
+//        }
+//		
+//		return orders;
 
 	}
 

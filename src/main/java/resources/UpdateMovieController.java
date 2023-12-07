@@ -38,6 +38,7 @@ public class UpdateMovieController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		int movieID = Integer.parseInt((String)request.getSession().getAttribute("editMovieID"));
 		String movieName = request.getParameter("movieName");
 		String movieType = request.getParameter("movieType");
 		int movieRating = Integer.parseInt(request.getParameter("movieRating"));
@@ -45,6 +46,7 @@ public class UpdateMovieController extends HttpServlet {
 		int movieNumCopies = Integer.parseInt(request.getParameter("movieNumCopies"));
 		
 		Movie movie = new Movie();
+		movie.setMovieID(movieID);
 		movie.setMovieName(movieName);
 		movie.setMovieType(movieType);
 		movie.setRating(movieRating);

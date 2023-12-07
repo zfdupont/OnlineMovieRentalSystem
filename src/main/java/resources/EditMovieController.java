@@ -42,6 +42,7 @@ public class EditMovieController extends HttpServlet {
 		Movie editMovie = movieDao.getMovie(movieID);
 		
 		request.getSession(true).setAttribute("editMovie", editMovie);
+		request.getSession(true).setAttribute("editMovieID", movieID);
 		response.sendRedirect("editMovie.jsp");
 	}
 

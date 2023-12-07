@@ -1,7 +1,7 @@
 USE CSE305;
 
 -- Inserting into Location
-INSERT INTO `Location` (ZipCode, City, State) VALUES
+INSERT INTO `Location` (ZipCode, City, `State`) VALUES
 (11790, 'Stony Brook', 'NY'),
 (93536, 'Los Angeles', 'CA'),
 (11794, 'Stony Brook', 'NY');

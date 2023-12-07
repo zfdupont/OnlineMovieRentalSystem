@@ -25,10 +25,10 @@
 				
 				//redirect to appropriate home page if already logged in
 				if(email != null) {
-					if(role.equals("manager")) {
+					if(role.equalsIgnoreCase("manager")) {
 						response.sendRedirect("managerHome.jsp");
 					}
-					else if(!role.equals("customerRepresentative")) {
+					else if(!role.equalsIgnoreCase("customerRepresentative")) {
 						response.sendRedirect("home.jsp");
 					}
 				}

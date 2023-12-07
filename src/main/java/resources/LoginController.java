@@ -46,23 +46,23 @@ public class LoginController extends HttpServlet {
 			String role = login.getRole();
 			request.getSession(true).setAttribute("email", username);
 			request.getSession(true).setAttribute("role", role);
-			if(role.equals("manager")) {
+			if(role.equalsIgnoreCase("manager")) {
 				EmployeeDao employeeDao = new EmployeeDao();
 				String employeeID = login.getPersonID();
 				request.getSession(true).setAttribute("employeeID", employeeID);				
 				response.sendRedirect("managerHome.jsp");
 			}
-			else if(role.equals("customerRepresentative")) {
-				EmployeeDao employeeDao = new EmployeeDao();
-				String employeeID = login.getPersonID();
-				request.getSession(true).setAttribute("employeeID", employeeID);				
-				response.sendRedirect("customerRepresentativeHome.jsp");
-			}
-			else {
+			else if(role.equalsIgnoreCase("customer")) {
 				CustomerDao customerDao = new CustomerDao();
 				String customerID = login.getPersonID();
 				request.getSession(true).setAttribute("customerID", customerID);
 				response.sendRedirect("home.jsp");	
+			}
+			else {
+				EmployeeDao employeeDao = new EmployeeDao();
+				String employeeID = login.getPersonID();
+				request.getSession(true).setAttribute("employeeID", employeeID);				
+				response.sendRedirect("customerRepresentativeHome.jsp");
 			}
 
 		}
