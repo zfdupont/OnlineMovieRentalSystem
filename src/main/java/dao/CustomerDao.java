@@ -32,24 +32,62 @@ public class CustomerDao {
 		 * The students code to fetch data from the database will be written here
 		 * Each record is required to be encapsulated as a "Customer" class object and added to the "customers" List
 		 */
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setCustomerID("111-11-1111");
-			customer.setAddress("123 Success Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
-			customer.setCity("Stony Brook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-			customer.setTelephone("5166328959");
-			customer.setCreditCard("1234567812345678");
-			customer.setRating(1);
-			customers.add(customer);			
+
+		Connection conn = null;
+		Statement st;
+		ResultSet rs;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			st = conn.createStatement();
+			String query = new StringBuilder()
+					.append("SELECT \n")
+					.append("C.Email, \n")
+					.append("P.FirstName, \n")
+					.append("P.LastName, \n")
+					.append("P.Address, \n")
+					.append("P.ZipCode, \n")
+					.append("Lc.State, \n")
+					.append("Lc.City, \n")
+					.append("P.Telephone, \n")
+					.append("C.ID AS CustomerID, \n")
+					.append("C.Rating, \n")
+					.append("C.CreditCardNumber \n")
+					.append("FROM Customer C\n")
+					.append("JOIN Person P ON C.ID = P.SSN\n")
+					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
+					.append(";")
+					.toString();
+			rs = st.executeQuery(query);
+			while(rs.next()) {
+				Customer customer = new Customer();
+				
+				customer.setCustomerID(Integer.toString(rs.getInt("CustomerID")));
+				customer.setEmail(rs.getString("Email"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setAddress(rs.getString("Address"));
+				customer.setState(rs.getString("State"));
+				customer.setCity(rs.getString("City"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+				customer.setTelephone(rs.getString("Telephone"));
+				customer.setRating(rs.getInt("Rating"));
+				customer.setCreditCard(rs.getString("CreditCardNumber"));
+
+				customers.add(customer);
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		/*Sample data ends*/
 		
 		return customers;
 	}
@@ -101,14 +139,6 @@ public class CustomerDao {
 				}
 			}
 		}
-		/*Sample data begins*/
-//		Customer customer = new Customer();
-//		customer.setCustomerID("111-11-1111");
-//		customer.setLastName("Lu");
-//		customer.setFirstName("Shiyong");
-//		customer.setEmail("shiyong@cs.sunysb.edu");
-		/*Sample data ends*/
-	
 		return customer;
 		
 	}
@@ -123,21 +153,75 @@ public class CustomerDao {
 
 		
 		List<Customer> customers = new ArrayList<Customer>();
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setCustomerID("111-11-1111");
-			customer.setAddress("123 Success Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
-			customer.setCity("Stony Brook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-			customers.add(customer);			
+
+		/*
+		 * The students code to fetch data from the database will be written here
+		 * Each record is required to be encapsulated as a "Customer" class object and added to the "customers" List
+		 */
+
+		Connection conn = null;
+		Statement st;
+		ResultSet rs;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			st = conn.createStatement();
+			String query = new StringBuilder()
+					.append("SELECT \n")
+					.append("C.Email, \n")
+					.append("P.FirstName, \n")
+					.append("P.LastName, \n")
+					.append("P.Address, \n")
+					.append("P.ZipCode, \n")
+					.append("Lc.State, \n")
+					.append("Lc.City, \n")
+					.append("C.ID AS CustomerID \n")
+					.append("FROM Customer C\n")
+					.append("JOIN Person P ON C.ID = P.SSN\n")
+					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
+					.append(";")
+					.toString();
+			rs = st.executeQuery(query);
+			while(rs.next()) {
+				Customer customer = new Customer();
+				
+				customer.setCustomerID(Integer.toString(rs.getInt("CustomerID")));
+				customer.setEmail(rs.getString("Email"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setAddress(rs.getString("Address"));
+				customer.setState(rs.getString("State"));
+				customer.setCity(rs.getString("City"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+
+				customers.add(customer);
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		/*Sample data ends*/
+//		/*Sample data begins*/
+//		for (int i = 0; i < 10; i++) {
+//			Customer customer = new Customer();
+//			customer.setCustomerID("111-11-1111");
+//			customer.setAddress("123 Success Street");
+//			customer.setLastName("Lu");
+//			customer.setFirstName("Shiyong");
+//			customer.setCity("Stony Brook");
+//			customer.setState("NY");
+//			customer.setEmail("shiyong@cs.sunysb.edu");
+//			customer.setZipCode(11790);
+//			customers.add(customer);			
+//		}
+//		/*Sample data ends*/
 		
 		return customers;
 	}

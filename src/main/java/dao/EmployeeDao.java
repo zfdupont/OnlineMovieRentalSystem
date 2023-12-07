@@ -145,7 +145,7 @@ public class EmployeeDao {
 					.append("JOIN Person P ON E.SSN = P.SSN\n")
 					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
 					.append("JOIN Login L ON P.SSN = L.PersonID\n")
-					.append("WHERE L.Role IN ('Manager', 'CustomerRep');")
+					.append("WHERE L.Role IN ('Manager', 'CustomerRepresentative');")
 					.toString();
 			rs = st.executeQuery(query);
 			while(rs.next()) {

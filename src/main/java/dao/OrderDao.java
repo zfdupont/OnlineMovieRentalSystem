@@ -11,7 +11,8 @@ import model.Customer;
 import model.Movie;
 
 public class OrderDao {
-	
+	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
+
 	public List<Order> getAllOrders() {
 		
 		List<Order> orders = new ArrayList<Order>();
@@ -97,15 +98,43 @@ public class OrderDao {
 		 * employeeEmail is the email ID of the customer representative, which is given as method parameter
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Order order = new Order();
-			order.setOrderID(1);
-			order.setDateTime("11-11-09 10:00");
-			order.setReturnDate("11-14-09");
-			orders.add(order);
-		}
-		/*Sample data ends*/
+		Connection conn = null;
+
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+            String sql = "SELECT O.ID AS OrderId, O.DateTime AS OrderDate " +
+                         "FROM `Order` O " +
+                         "JOIN Rental R ON O.ID = R.OrderId " +
+                         "JOIN Employee E ON R.CustRepId = E.ID " +
+                         "WHERE E.Email = ? AND O.ReturnDate IS NULL";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, employeeEmail);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int orderId = resultSet.getInt("OrderId");
+                Date orderDate = resultSet.getDate("OrderDate");
+                Order order = new Order();
+                order.setDateTime(orderDate.toString());
+                order.setOrderID(orderId);
+                order.setReturnDate("???");
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle exceptions appropriately
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle exceptions during close
+                }
+            }
+        }
 		
 		return orders;
 

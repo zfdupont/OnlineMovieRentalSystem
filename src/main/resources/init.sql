@@ -90,7 +90,7 @@ CREATE TABLE Movie (
     Rating INTEGER,
     DistrFee DECIMAL(19,4), 
     NumCopies INTEGER,
-    PRIMARY KEY (ID) 
+    PRIMARY KEY (ID)
 );
 
 CREATE TABLE Actor (
@@ -149,7 +149,7 @@ CREATE TABLE AppearedIn (
 CREATE TABLE Login (
     Username    CHAR(32) NOT NULL,  -- Assuming username is the email
     Password    VARCHAR(255) NOT NULL DEFAULT 'password', -- Storing password as a hash for security
-    Role        CHAR(20) CHECK (Role IN ('Customer', 'Manager', 'CustomerRepresentative')),
+    Role        CHAR(25) CHECK (Role IN ('Customer', 'Manager', 'CustomerRepresentative')),
     PersonID    INTEGER NOT NULL,
     PRIMARY KEY (Username),
     FOREIGN KEY (PersonID) REFERENCES Person (SSN)

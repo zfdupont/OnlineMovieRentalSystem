@@ -30,10 +30,10 @@
 						response.sendRedirect("managerHome.jsp");
 					}
 					else if(role.equalsIgnoreCase("customer")) {
-						response.sendRedirect("customerRepresentativeHome.jsp");	
+						response.sendRedirect("home.jsp");	
 					}
 					else {
-						response.sendRedirect("home.jsp");
+						response.sendRedirect("customerRepresentativeHome.jsp");
 					}
 				}
 				

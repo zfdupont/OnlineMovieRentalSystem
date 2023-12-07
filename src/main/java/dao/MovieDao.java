@@ -162,7 +162,7 @@ public class MovieDao {
 		 */
 		
 		Connection conn = null;
-		boolean editSuccessful;
+		boolean editSuccessful = false;
 	    try {
 	    	Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
@@ -236,7 +236,7 @@ public class MovieDao {
 	        } else {
 	            conn.rollback(); // Rollback transaction if no rows affected
 	        }
-	    } catch (SQLException e) {
+	    } catch (Exception e) {
 	        if (conn != null) {
 	            try {
 	                conn.rollback(); // Rollback transaction on exception
@@ -397,38 +397,39 @@ public class MovieDao {
 			if (!zipResultSet.next()) {
 				return movies; // No zip code found
 			}
-
-			String customerZipPrefix = zipResultSet.getString("ZipString").substring(0, 2);
-
-			// Step 2: Recommend movies from the most ordered genre that the customer hasn't ordered yet but
-			// users in the customer's area have
-
-			String suggestedMoviesQuery = "SELECT DISTINCT M.ID, M.Name, M.Type " +
-                    "FROM Movie M " +
-                    "JOIN Rental R ON M.ID = R.MovieId " +
-                    "JOIN Account A ON R.AccountId = A.ID " +
-                    "JOIN Customer C ON A.CustomerId = C.ID " +
-                    "JOIN Person P ON C.ID = P.SSN " +
-                    "WHERE M.Type = ? AND M.ID NOT IN ( " +
-                    "    SELECT MovieId " +
-                    "    FROM Rental " +
-                    "    WHERE AccountId = A.ID " +
-                    ") AND CAST(P.ZipCode AS CHAR) LIKE ? " +
-                    "ORDER BY M.Name";
-
-			PreparedStatement suggestedMoviesStmt = conn.prepareStatement(suggestedMoviesQuery);
-			suggestedMoviesStmt.setString(1, mostOrderedGenre);
-			suggestedMoviesStmt.setString(2, customerZipPrefix + "%");
-
-			ResultSet rs = suggestedMoviesStmt.executeQuery();
-
-			while (rs.next()) {
-				Movie movie = new Movie();
-				movie.setMovieID(rs.getInt("ID"));
-				movie.setMovieName(rs.getString("Name"));
-				movie.setMovieType(rs.getString("Type"));
-				movies.add(movie);
-			}
+			
+			movies = (ArrayList<Movie>)getMoviesByType(mostOrderedGenre);
+//			String customerZipPrefix = zipResultSet.getString("ZipString").substring(0, 2);
+		
+//			// Step 2: Recommend movies from the most ordered genre that the customer hasn't ordered yet but
+//			// users in the customer's area have
+//
+//			String suggestedMoviesQuery = "SELECT DISTINCT M.ID, M.Name, M.Type " +
+//                    "FROM Movie M " +
+//                    "JOIN Rental R ON M.ID = R.MovieId " +
+//                    "JOIN Account A ON R.AccountId = A.ID " +
+//                    "JOIN Customer C ON A.CustomerId = C.ID " +
+//                    "JOIN Person P ON C.ID = P.SSN " +
+//                    "WHERE M.Type = ? AND M.ID NOT IN ( " +
+//                    "    SELECT MovieId " +
+//                    "    FROM Rental " +
+//                    "    WHERE AccountId = A.ID " +
+//                    ") AND CAST(P.ZipCode AS CHAR) LIKE ? " +
+//                    "ORDER BY M.Name";
+//
+//			PreparedStatement suggestedMoviesStmt = conn.prepareStatement(suggestedMoviesQuery);
+//			suggestedMoviesStmt.setString(1, mostOrderedGenre);
+//			suggestedMoviesStmt.setString(2, customerZipPrefix + "%");
+//
+//			ResultSet rs = suggestedMoviesStmt.executeQuery();
+//
+//			while (rs.next()) {
+//				Movie movie = new Movie();
+//				movie.setMovieID(rs.getInt("ID"));
+//				movie.setMovieName(rs.getString("Name"));
+//				movie.setMovieType(rs.getString("Type"));
+//				movies.add(movie);
+//			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
 		} finally {
