@@ -2,10 +2,8 @@ package dao;
 
 import model.Login;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.xml.transform.Result;
+import java.sql.*;
 
 public class LoginDao {
 	/*
@@ -24,13 +22,46 @@ public class LoginDao {
 		 */
 		
 		/*Sample data begins*/
-		Login login = new Login();
-		login.setRole("customer");
+		Login login = null;
+//		login.setRole("customer");
 //		login.setRole("customerRepresentative");
 //		login.setRole("manager");
-		return login;
+//		return login;
 		/*Sample data ends*/
-		
+
+
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn.setAutoCommit(false);
+
+			String query = "SELECT * FROM Login L WHERE (L.Username = ? AND L.Password = ?)";
+			PreparedStatement statement = conn.prepareStatement(query);
+			statement.setString(1, username);
+			statement.setString(2, password);
+
+			ResultSet rs = statement.executeQuery();
+
+			if(rs.next()){
+				login.setUsername(rs.getString("Username"));
+				login.setPassword(rs.getString("Password"));
+				login.setRole(rs.getString("Role"));
+				login.setPersonID(rs.getString("PersonID"));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return login;
 	}
 	
 	public String addUser(Login login) {
