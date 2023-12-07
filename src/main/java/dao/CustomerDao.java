@@ -191,8 +191,37 @@ public class CustomerDao {
 		 * username, which is the email address of the customer, who's ID has to be returned, is given as method parameter
 		 * The Customer's ID is required to be returned as a String
 		 */
+		Connection conn = null;
+		Customer customer = new Customer();
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-		return "111-11-1111";
+			String query = "SELECT * FROM Customer C WHERE C.Email = ?;";
+			PreparedStatement statement = conn.prepareStatement(query);
+			statement.setString(1, username);
+
+			ResultSet rs = statement.executeQuery();
+
+			if(rs.next()){
+				customer.setCustomerID(rs.getString("ID"));
+				customer.setEmail(rs.getString("Email"));
+				System.out.printf("Got customer in (%s, %s)", customer.getEmail(), customer.getCustomerID());
+				return customer.getCustomerID();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return customer.getCustomerID();
 	}
 
 

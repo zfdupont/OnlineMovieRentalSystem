@@ -71,7 +71,7 @@ public class AccountDao {
 	
 	public String setAccount(String customerID, String accountType) {
 
-		
+		System.out.println(customerID);
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");

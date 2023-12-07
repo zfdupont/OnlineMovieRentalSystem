@@ -44,10 +44,13 @@ public class LoginDao {
 			ResultSet rs = statement.executeQuery();
 
 			if(rs.next()){
+				
+				login = new Login();
 				login.setUsername(rs.getString("Username"));
 				login.setPassword(rs.getString("Password"));
 				login.setRole(rs.getString("Role"));
 				login.setPersonID(rs.getString("PersonID"));
+				System.out.printf("Logging in (%s, %s, %s, %s)", login.getUsername(), login.getPassword(), login.getRole(), login.getPersonID());
 			}
 
 		} catch (Exception e) {
