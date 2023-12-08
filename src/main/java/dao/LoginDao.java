@@ -54,14 +54,6 @@ public class LoginDao {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return login;
 	}
@@ -102,14 +94,6 @@ public class LoginDao {
 			}
 			e.printStackTrace();
 			return "failure";
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 	}

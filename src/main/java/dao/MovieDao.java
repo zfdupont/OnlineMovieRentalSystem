@@ -44,14 +44,6 @@ public class MovieDao {
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 		return movies;
@@ -86,14 +78,6 @@ public class MovieDao {
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 		return movie;
@@ -138,14 +122,6 @@ public class MovieDao {
 			}
 			e.printStackTrace();
 			return "failure";
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 	
@@ -195,7 +171,6 @@ public class MovieDao {
 	        if (conn != null) {
 	            try {
 	                conn.setAutoCommit(true); // Reset auto-commit
-	                conn.close();
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            }
@@ -244,7 +219,6 @@ public class MovieDao {
 	        if (conn != null) {
 	            try {
 	                conn.setAutoCommit(true); // Reset auto-commit
-	                conn.close();
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            }
@@ -291,13 +265,7 @@ public class MovieDao {
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
 		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
+
 		}
 //		/*Sample data begins*/
 //		for (int i = 0; i < 5; i++) {
@@ -425,14 +393,6 @@ public class MovieDao {
 //			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 		return movies;
@@ -599,14 +559,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 
 		return movies;
@@ -644,14 +596,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 
 		return movies;
@@ -698,14 +642,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 		return movies;
@@ -745,14 +681,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		return movies;
 	}
@@ -788,14 +716,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 
 		return movies;
@@ -835,14 +755,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 
@@ -881,14 +793,6 @@ public List<Movie> getQueueOfMovies(String customerID){
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
 		}
 		
 		return movies;

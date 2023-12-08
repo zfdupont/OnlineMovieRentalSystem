@@ -79,14 +79,6 @@ public class CustomerDao {
 			}
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		
 		return customers;
@@ -129,14 +121,6 @@ public class CustomerDao {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();  // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();  // Handle exceptions during close
-				}
-			}
 		}
 		return customer;
 		
@@ -195,16 +179,9 @@ public class CustomerDao {
 
 				customers.add(customer);
 			}
+			conn.setAutoCommit(false);
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 //		/*Sample data begins*/
 //		for (int i = 0; i < 10; i++) {
@@ -271,14 +248,6 @@ public class CustomerDao {
 			}
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		
 		return customer;
@@ -352,15 +321,6 @@ public class CustomerDao {
 		        }
 		    }
 		    e.printStackTrace();
-		} finally {
-		    if (conn != null) {
-		        try {
-		            conn.setAutoCommit(true); // Reset auto-commit to default
-		            conn.close();
-		        } catch (SQLException e) {
-		            e.printStackTrace();
-		        }
-		    }
 		}
 		
 		return result;
@@ -395,14 +355,6 @@ public class CustomerDao {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return customer.getCustomerID();
 	}
@@ -506,7 +458,6 @@ public class CustomerDao {
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true); // Reset auto-commit to default
-                    conn.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -580,7 +531,6 @@ public class CustomerDao {
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true); // Reset auto-commit to default
-                    conn.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

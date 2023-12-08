@@ -114,7 +114,7 @@ public class AccountDao {
 		} finally {
 			if (conn != null) {
 				try {
-					conn.close();
+					conn.setAutoCommit(false);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -148,14 +148,6 @@ public class AccountDao {
 			}
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		
 		return account;

@@ -68,14 +68,6 @@ public class EmployeeDao {
 			}
 			e.printStackTrace();
 			return "failure";
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 	}
@@ -143,7 +135,6 @@ public class EmployeeDao {
             if (conn != null) {
                 try {
                     conn.setAutoCommit(true); // Reset auto-commit to default
-                    conn.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -225,14 +216,6 @@ public class EmployeeDao {
 			}
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		
 		return employees;
@@ -279,14 +262,6 @@ public class EmployeeDao {
 			}
 		} catch(Exception e) {
 			System.err.println(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		
 		return employee;
@@ -328,14 +303,6 @@ public class EmployeeDao {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();  // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();  // Handle exceptions during close
-				}
-			}
 		}
 		
 		return employee;

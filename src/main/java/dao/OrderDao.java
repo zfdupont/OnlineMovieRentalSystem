@@ -156,14 +156,6 @@ public class OrderDao {
             }
         } catch (Exception e) {
             e.printStackTrace(); 
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace(); 
-                }
-            }
         }
 
         return result;
