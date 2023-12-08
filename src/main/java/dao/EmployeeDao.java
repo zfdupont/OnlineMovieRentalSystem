@@ -89,9 +89,69 @@ public class EmployeeDao {
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
 		
-		/*Sample data begins*/
-		return "success";
-		/*Sample data ends*/
+		Connection conn = null;
+        String result = "failure";
+
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			
+            conn.setAutoCommit(false); // Start transaction
+            
+            int id = Integer.valueOf(employee.getEmployeeID());
+            
+            // Upsert into Location table
+            String sqlLocationUpsert = "INSERT INTO Location (ZipCode, City, State) VALUES (?, ?, ?) " +
+                                       "ON DUPLICATE KEY UPDATE City = VALUES(City), State = VALUES(State)";
+            PreparedStatement statementLocation = conn.prepareStatement(sqlLocationUpsert);
+            statementLocation.setInt(1, employee.getZipCode());
+            statementLocation.setString(2, employee.getCity());
+            statementLocation.setString(3, employee.getState());
+            statementLocation.executeUpdate();
+            
+            // Update Person table
+            String sqlPerson = "UPDATE Person SET LastName = ?, FirstName = ?, Address = ?, ZipCode = ?, Telephone = ? WHERE SSN = ?";
+            PreparedStatement statementPerson = conn.prepareStatement(sqlPerson);
+            statementPerson.setString(1, employee.getLastName());
+            statementPerson.setString(2, employee.getFirstName());
+            statementPerson.setString(3, employee.getAddress());
+            statementPerson.setInt(4, employee.getZipCode());
+            statementPerson.setString(5, employee.getTelephone());
+            statementPerson.setInt(6, id);
+            statementPerson.executeUpdate();
+
+            // Update Employee table
+            String sqlEmployee = "UPDATE Employee SET Email = ?, StartDate = ?, HourlyRate = ? WHERE ID = ?";
+            PreparedStatement statementEmployee = conn.prepareStatement(sqlEmployee);
+            statementEmployee.setString(1, employee.getEmail());
+            statementEmployee.setDate(2, Date.valueOf(employee.getStartDate()));
+            statementEmployee.setInt(3, (int) employee.getHourlyRate());
+            statementEmployee.setInt(4, id);
+            statementEmployee.executeUpdate();
+
+            conn.commit(); // Commit the transaction
+            result = "success";
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Rollback transaction on exception
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true); // Reset auto-commit to default
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return result;
 
 	}
 
@@ -199,23 +259,12 @@ public class EmployeeDao {
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 			st = conn.createStatement();
 			String query = new StringBuilder()
-					.append("SELECT \n")
-					.append("    E.Email, \n")
-					.append("    P.FirstName, \n")
-					.append("    P.LastName, \n")
-					.append("    P.Address, \n")
-					.append("    E.StartDate, \n")
-					.append("    P.ZipCode, \n")
-					.append("    P.Telephone, \n")
-					.append("    Lc.State, \n")
-					.append("	 Lc.City, \n")
-					.append("    E.ID AS EmployeeID, \n")
-					.append("    E.HourlyRate\n")
+					.append("SELECT *")
 					.append("FROM Employee E\n")
 					.append("JOIN Person P ON E.SSN = P.SSN\n")
 					.append("JOIN Location Lc ON P.ZipCode = Lc.ZipCode\n")
 					.append("WHERE ")
-					.append(String.format("    E.ID = %s;", employeeID))
+					.append(String.format("    E.SSN = %s;", employeeID))
 					.toString();
 			rs = st.executeQuery(query);
 			if(rs.next()) {
@@ -228,9 +277,8 @@ public class EmployeeDao {
 				employee.setState(rs.getString("State"));
 				employee.setZipCode(rs.getInt("ZipCode"));
 				employee.setTelephone(rs.getString("Telephone"));
-				employee.setEmployeeID(Integer.toString(rs.getInt("ID")));
+				employee.setEmployeeID(Integer.toString(rs.getInt("SSN")));
 				employee.setHourlyRate(rs.getInt("HourlyRate"));
-				employee.setEmployeeID("EmployeeID");
 			}
 		} catch(Exception e) {
 			System.err.println(e);

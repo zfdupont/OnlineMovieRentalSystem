@@ -104,7 +104,7 @@ public class OrderDao {
         	Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-            String sql = "SELECT O.ID AS OrderId, O.DateTime AS OrderDate " +
+            String sql = "SELECT DISTINCT O.ID AS OrderId, O.DateTime AS OrderDate " +
                          "FROM `Order` O " +
                          "JOIN Rental R ON O.ID = R.OrderId " +
                          "JOIN Employee E ON R.CustRepId = E.ID " +
@@ -149,9 +149,35 @@ public class OrderDao {
 		 * orderID is the Order's ID, given as method parameter
 		 * The method should return a "success" string if the update is successful, else return "failure"
 		 */
-		/* Sample data begins */
-		return "success";
-		/* Sample data ends */
+		Connection conn = null;
+        String result = "failure";
+
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+
+            String sql = "UPDATE `Order` SET ReturnDate = CURRENT_DATE WHERE ID = ?";
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, Integer.valueOf(orderID));
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                result = "success";
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace(); 
+                }
+            }
+        }
+
+        return result;
 	}
 	
 	public List<Rental> getOrderHisroty(String customerID) {

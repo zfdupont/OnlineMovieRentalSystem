@@ -89,7 +89,7 @@ public class LoginDao {
 			psLocation.setString(1, login.getUsername());
 			psLocation.setString(2, login.getPassword());
 			psLocation.setString(3, login.getRole());
-			psLocation.setString(4, login.getPersonID());
+			psLocation.setInt(4, Integer.valueOf(login.getPersonID()));
 			psLocation.executeUpdate();
 
 			conn.commit();

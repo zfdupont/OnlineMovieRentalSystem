@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 import model.Employee;
 import model.Movie;
 import model.Account;
+import model.Customer;
 
 public class AccountDao {
 
@@ -31,43 +33,64 @@ public class AccountDao {
 
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
 
-			String sql = new StringBuilder()
-					.append("SELECT SUM(M.DistrFee) AS TotalIncome ")
-					.append("FROM `Order` O ")
-					.append("JOIN Rental R ON O.ID = R.OrderId ")
-					.append("JOIN Movie M ON R.MovieId = M.ID ")
-					.append("WHERE MONTH(O.DateTime) = ? AND YEAR(O.DateTime) = ?;")
-					.toString();
-			
-			String dateString[] = account.getAcctCreateDate().split("-");
+            // SQL query to calculate total income from subscription fees
+            String sqlSubscriptionFee = new StringBuilder()
+                    .append("SELECT A.Type, COUNT(DISTINCT R.MovieId) AS MoviesOut, COUNT(DISTINCT A.ID) AS NumAccounts ")
+                    .append("FROM Account A ")
+                    .append("JOIN Rental R ON A.ID = R.AccountId ")
+                    .append("JOIN `Order` O ON R.OrderId = O.ID ")
+                    .append("WHERE MONTH(O.DateTime) = ? AND YEAR(O.DateTime) = ? ")
+                    .append("GROUP BY A.Type, A.ID")
+                    .toString();
 
+            String dateString[] = account.getAcctCreateDate().split("-");
 
-			PreparedStatement st = conn.prepareStatement(sql);
-			st.setInt(1, Integer.parseInt(dateString[0]));
-			st.setInt(2, Integer.parseInt(dateString[1]));
-			
-			ResultSet rs = st.executeQuery();
+            // Calculate income from subscription fees
+            PreparedStatement stSubscriptionFee = conn.prepareStatement(sqlSubscriptionFee);
+            stSubscriptionFee.setInt(1, Integer.parseInt(dateString[0]));
+            stSubscriptionFee.setInt(2, Integer.parseInt(dateString[1]));
+            ResultSet rs = stSubscriptionFee.executeQuery();
 
-			if (rs.next()) {
-				income = rs.getInt("TotalIncome");
-			}
-		} catch (Exception e) {
-			e.printStackTrace(); // Handle exceptions appropriately
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace(); // Handle exceptions during close
-				}
-			}
-		}
+            while (rs.next()) {
+                String type = rs.getString("Type");
+                int moviesOut = rs.getInt("MoviesOut");
+                int numAccounts = rs.getInt("NumAccounts");
+                income += calculateMonthlyFee(type, moviesOut) * numAccounts;
+            }
 
-		return income;
-	}
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle exceptions appropriately
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace(); // Handle exceptions during close
+                }
+            }
+        }
+
+        return income;
+    }
+
+	private int calculateMonthlyFee(String planType, int moviesOut) {
+        // Assuming the fee depends on the number of movies out at a time
+        if (planType.equals("Limited")) {
+            return 10; // Flat rate for limited plan
+        } else if (planType.startsWith("Unlimited")) {
+            switch (moviesOut) {
+                case 1: return 15;
+                case 2: return 20;
+                case 3: return 25;
+                default: return 0; // Fallback for unexpected cases
+            }
+        } else {
+            return 0; // Unknown plan type
+        }
+    }
 	
 	public String setAccount(String customerID, String accountType) {
 
@@ -107,6 +130,46 @@ public class AccountDao {
 				}
 			}
 		}
+	}
+	
+	public Account getAccount(String customerID) {
+
+		Account account = new Account();
+		Connection conn = null;
+		PreparedStatement st;
+		ResultSet rs;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			
+			String query = new StringBuilder()
+					.append("SELECT * FROM ")
+					.append("Account ")
+					.append("WHERE CustomerID = ?;")
+					.toString();
+			st = conn.prepareStatement(query);
+			st.setInt(1, Integer.valueOf(customerID));
+			rs = st.executeQuery();
+			if(rs.next()) {
+				account.setAccountID(rs.getInt("ID"));
+				account.setAccountType(rs.getString("Type"));
+				account.setAcctCreateDate(rs.getString("DateOpened"));
+				account.setCustomerID(Integer.toString(rs.getInt("CustomerID")));
+			}
+		} catch(Exception e) {
+			System.err.println(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return account;
 	}
 	
 

@@ -37,7 +37,7 @@ INSERT INTO Customer (ID, Email, Rating, CreditCardNumber) VALUES
 INSERT INTO Account (ID, DateOpened, `Type`, CustomerId) VALUES
 (1, '2006-10-01', 'Unlimited-2', 444444444),
 (2, '2006-10-15', 'Limited', 222222222),
-(3, '2006-10-15', 'Limited', 333333333);
+(3, '2006-10-15', 'Unlimited-3', 333333333);
 
 -- Inserting into Movie
 INSERT INTO Movie (ID, `Name`, `Type`, Rating, DistrFee, NumCopies) VALUES

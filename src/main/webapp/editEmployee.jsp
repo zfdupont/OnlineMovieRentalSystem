@@ -1,6 +1,6 @@
 <%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="model.Customer"%>
+<%@page import="model.Employee"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -33,7 +33,7 @@
 	<form action="updateEmployee" method="POST">
 	  <div class="form-group">
 	    <label for="employeeEmail">Email address</label>
-	    <input type="email" class="form-control" id="employeeEmail" name="employeeEmail" placeholder="Enter email" value=${editEmployee.email} required>
+	    <input type="email" class="form-control" id="employeeEmail" name="employeeEmail" placeholder="Enter email" value=${editEmployee.email} >
 	  </div>
   	  <div class="form-group">
 	    <label for="employeeFirstName">First Name</label>
@@ -69,7 +69,7 @@
 	  </div>
    	  <div class="form-group">
 	    <label for="employeeStartDate">Start Date</label>
-	    <input type="text" class="form-control" id="employeeStartDate" name="employeeStartDate" placeholder="YYYY-MM-DD" value=${editEmployee.startDate} required>
+	    <input type="text" class="form-control" id="employeeStartDate" name="employeeStartDate" placeholder="YYYY-MM-DD" value=${editEmployee.startDate} readonly>
 	  </div>
    	  <div class="form-group">
 	    <label for="employeeHourlyRate">Hourly Rate</label>

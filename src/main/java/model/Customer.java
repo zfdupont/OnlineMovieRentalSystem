@@ -18,6 +18,7 @@ public class Customer {
 	private String email;
 	private String creditCard;
 	private int rating;
+	private String password;
 	public String getCustomerID() {
 		return customerID;
 	}
@@ -89,6 +90,12 @@ public class Customer {
 		return "The Customer Details are: <br/>Customer ID=" + customerID + "<br/>First Name=" + firstName + "<br/>Last Name=" + lastName
 				+ "<br/>Address=" + Address + "<br/>City=" + City + "<br/>State=" + State + "<br/>Zip Code=" + zipCode
 				+ "<br/>Telephone=" + telephone + "<br/>Email=" + email + "<br/>Credit Card=" + creditCard + "<br/>Rating=" + rating;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }

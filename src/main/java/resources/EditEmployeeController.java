@@ -42,6 +42,8 @@ public class EditEmployeeController extends HttpServlet {
 		Employee editEmployee = employeeDao.getEmployee(employeeID);
 		
 		request.getSession(true).setAttribute("editEmployee", editEmployee);
+		request.getSession(true).setAttribute("editID", editEmployee.getEmployeeID());
+		System.out.println(request.getSession(true).getAttribute("editEmployee").toString());
 		response.sendRedirect("editEmployee.jsp");
 
 

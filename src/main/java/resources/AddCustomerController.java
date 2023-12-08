@@ -74,6 +74,7 @@ public class AddCustomerController extends HttpServlet {
 			Login login = new Login();
 			login.setUsername(email);
 			login.setPassword(password);
+			login.setPersonID(customer.getCustomerID());
 			login.setRole("customer");
 			LoginDao loginDao = new LoginDao();
 			String loginResult = loginDao.addUser(login);

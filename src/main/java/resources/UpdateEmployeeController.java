@@ -1,6 +1,8 @@
 package resources;
 
 import java.io.IOException;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ public class UpdateEmployeeController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
 		
 		String email = request.getParameter("employeeEmail");
 		String firstName = request.getParameter("employeeFirstName");
