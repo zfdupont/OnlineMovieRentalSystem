@@ -9,9 +9,9 @@ import model.Rental;
 import model.Account;
 import model.Customer;
 import model.Movie;
+import resources.ConnectionSingleton;
 
 public class OrderDao {
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 
 	public List<Order> getAllOrders() {
 		
@@ -101,8 +101,7 @@ public class OrderDao {
 		Connection conn = null;
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
 
             String sql = "SELECT DISTINCT O.ID AS OrderId, O.DateTime AS OrderDate " +
                          "FROM `Order` O " +
@@ -153,8 +152,7 @@ public class OrderDao {
         String result = "failure";
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
 
             String sql = "UPDATE `Order` SET ReturnDate = CURRENT_DATE WHERE ID = ?";
 

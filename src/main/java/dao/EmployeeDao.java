@@ -6,12 +6,13 @@ import java.util.List;
 
 import model.Customer;
 import model.Employee;
+import resources.ConnectionSingleton;
 
 public class EmployeeDao {
 	/*
 	 * This class handles all the database operations related to the employee table
 	 */
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
+
 	public String addEmployee(Employee employee) {
 
 		/*
@@ -24,8 +25,7 @@ public class EmployeeDao {
 
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false);
 
 			PreparedStatement psLocation = conn.prepareStatement(
@@ -93,8 +93,7 @@ public class EmployeeDao {
         String result = "failure";
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
 			
             conn.setAutoCommit(false); // Start transaction
             
@@ -184,8 +183,7 @@ public class EmployeeDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -255,8 +253,7 @@ public class EmployeeDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT *")
@@ -305,8 +302,7 @@ public class EmployeeDao {
 		Employee employee = new Employee();
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT E.SSN, P.FirstName, P.LastName, E.Email, SUM(M.DistrFee) AS TotalRevenue\n")
@@ -356,8 +352,7 @@ public class EmployeeDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")

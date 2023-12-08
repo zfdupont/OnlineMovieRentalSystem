@@ -10,9 +10,9 @@ import java.util.List;
 
 import model.Order;
 import model.Rental;
+import resources.ConnectionSingleton;
 
 public class RentalDao {
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 	public List<Rental> getOrderHisroty(String customerID) {
 		
 		List<Rental> rentals = new ArrayList<Rental>();
@@ -20,8 +20,7 @@ public class RentalDao {
 		Connection conn = null;
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
 			
             String sql = "SELECT O.ID AS OrderId, R.MovieId, R.CustRepId " +
                     "FROM `Order` O " +

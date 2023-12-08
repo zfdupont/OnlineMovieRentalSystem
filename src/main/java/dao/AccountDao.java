@@ -14,10 +14,11 @@ import model.Employee;
 import model.Movie;
 import model.Account;
 import model.Customer;
+import resources.ConnectionSingleton;
 
 public class AccountDao {
 
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
+
 	public int getSalesReport(Account account) {
 			
 		/*
@@ -33,8 +34,7 @@ public class AccountDao {
 
 		Connection conn = null;
 		try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+            conn = ConnectionSingleton.getInstance().getConnection();
 
             // SQL query to calculate total income from subscription fees
             String sqlSubscriptionFee = new StringBuilder()
@@ -97,8 +97,7 @@ public class AccountDao {
 		System.out.println(customerID);
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false);
 
 			String query = "UPDATE Account SET `Type` = ? WHERE CustomerId = ?";
@@ -140,8 +139,7 @@ public class AccountDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			
 			String query = new StringBuilder()
 					.append("SELECT * FROM ")

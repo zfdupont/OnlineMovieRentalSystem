@@ -8,6 +8,7 @@ import model.Account;
 import model.Customer;
 import model.Customer;
 import model.Employee;
+import resources.ConnectionSingleton;
 
 import java.util.stream.IntStream;
 
@@ -20,7 +21,6 @@ public class CustomerDao {
 	 * @param String searchKeyword
 	 * @return ArrayList<Customer> object
 	 */
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 
 	public List<Customer> getCustomers() {
 		/*
@@ -39,8 +39,7 @@ public class CustomerDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -104,8 +103,7 @@ public class CustomerDao {
 		Customer customer = new Customer();
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT C.ID AS CustomerID, P.FirstName, C.Email, P.LastName, SUM(M.DistrFee) AS TotalSpent \n")
@@ -165,8 +163,7 @@ public class CustomerDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -243,8 +240,7 @@ public class CustomerDao {
 		ResultSet rs;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			st = conn.createStatement();
 			String query = new StringBuilder()
 					.append("SELECT \n")
@@ -300,8 +296,7 @@ public class CustomerDao {
 		String result = "failure";
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 		    conn.setAutoCommit(false); // Start transaction
 		    
 		    int customerId = Integer.valueOf(customerID);
@@ -383,8 +378,7 @@ public class CustomerDao {
 		Connection conn = null;
 		Customer customer = new Customer();
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = "SELECT * FROM Customer C WHERE C.Email = ?;";
 			PreparedStatement statement = conn.prepareStatement(query);
@@ -458,8 +452,7 @@ public class CustomerDao {
         String result = "failure";
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
             conn.setAutoCommit(false); // Start transaction
             
             
@@ -535,8 +528,7 @@ public class CustomerDao {
         String result = "failure";
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
             conn.setAutoCommit(false); // Start transaction
             
             

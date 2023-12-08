@@ -6,13 +6,13 @@ import java.util.*;
 import model.Order;
 import model.Employee;
 import model.Movie;
+import resources.ConnectionSingleton;
 
 //import com.mysql.cj.jdbc.Driver;
 
 public class MovieDao {
 
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
-	
+
 	public List<Movie> getMovies() {
 		
 		/*
@@ -26,8 +26,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = "SELECT ID, Name, Type, DistrFee, NumCopies, Rating FROM Movie";
 
@@ -71,8 +70,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = "SELECT ID, Name, Type, DistrFee, NumCopies, Rating FROM Movie WHERE ID = ?";
 			PreparedStatement st = conn.prepareStatement(query);
@@ -113,8 +111,7 @@ public class MovieDao {
 		
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false);
 
 			PreparedStatement psMovie = conn.prepareStatement(
@@ -164,8 +161,7 @@ public class MovieDao {
 		Connection conn = null;
 		boolean editSuccessful = false;
 	    try {
-	    	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+	    	conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false); // Start transaction
 
 	        String sql = "UPDATE Movie SET Name = ?, Type = ?, DistrFee = ?, NumCopies = ?, Rating = ? WHERE ID = ?";
@@ -220,8 +216,7 @@ public class MovieDao {
 	    boolean deleteSuccessful = false;
 
 	    try {
-	    	Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+	    	conn = ConnectionSingleton.getInstance().getConnection();
 	        conn.setAutoCommit(false); // Start transaction
 
 	        String sql = "DELETE FROM Movie WHERE ID = ?";
@@ -272,8 +267,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT M.ID, M.Name, M.Type, M.DistrFee, M.NumCopies, M.Rating, SUM(M.DistrFee) AS TotalEarned ")
@@ -364,8 +358,7 @@ public class MovieDao {
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			// Step 1: Find the most ordered genre for the given customer
 			String mostOrderedGenreQuery = new StringBuilder()
@@ -459,8 +452,7 @@ public class MovieDao {
 		Connection conn = null;
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
 
             String sql = "SELECT M.ID, M.Name, M.Type " +
                          "FROM Movie M " +
@@ -513,8 +505,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
         try {
-        	Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+        	conn = ConnectionSingleton.getInstance().getConnection();
             
             String sql = "SELECT MQ.MovieId, M.Name, M.Type " +
                          "FROM MovieQ MQ " +
@@ -613,8 +604,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = "SELECT DISTINCT `Type` FROM Movie";
 
@@ -657,8 +647,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = String.format("SELECT * FROM Movie WHERE Name LIKE '%%%s%%'", movieName);
 
@@ -703,8 +692,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT M.ID, M.Name, M.Type ")
@@ -759,8 +747,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = String.format("SELECT * FROM Movie WHERE `Type` = '%s'", movieType);
 
@@ -797,8 +784,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")
@@ -842,8 +828,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")
@@ -893,8 +878,7 @@ public List<Movie> getQueueOfMovies(String customerID){
 		Connection conn = null;
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 
 			String query = new StringBuilder()
 					.append("SELECT DISTINCT M.ID, M.Name, M.Type FROM Movie M ")

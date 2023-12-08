@@ -1,6 +1,7 @@
 package dao;
 
 import model.Login;
+import resources.ConnectionSingleton;
 
 import javax.xml.transform.Result;
 import java.sql.*;
@@ -10,7 +11,6 @@ public class LoginDao {
 	 * This class handles all the database operations related to login functionality
 	 */
 
-	private static String CONNECTION_STRING = "jdbc:mysql://localhost:3306/CSE305";
 	public Login login(String username, String password) {
 		/*
 		 * Return a Login object with role as "manager", "customerRepresentative" or "customer" if successful login
@@ -32,8 +32,7 @@ public class LoginDao {
 
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false);
 
 			String query = "SELECT * FROM Login L WHERE (L.Username = ? AND L.Password = ?)";
@@ -79,8 +78,7 @@ public class LoginDao {
 
 		Connection conn = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(CONNECTION_STRING, "root", "root");
+			conn = ConnectionSingleton.getInstance().getConnection();
 			conn.setAutoCommit(false);
 
 			PreparedStatement psLocation = conn.prepareStatement(
