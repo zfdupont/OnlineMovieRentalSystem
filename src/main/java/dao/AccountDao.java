@@ -63,16 +63,7 @@ public class AccountDao {
 
         } catch (Exception e) {
             e.printStackTrace(); // Handle exceptions appropriately
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception e) {
-                    e.printStackTrace(); // Handle exceptions during close
-                }
-            }
-        }
-
+        } 
         return income;
     }
 

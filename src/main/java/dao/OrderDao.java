@@ -125,16 +125,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             e.printStackTrace(); // Handle exceptions appropriately
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace(); // Handle exceptions during close
-                }
-            }
-        }
-		
+        } 		
 		return orders;
 
 		
